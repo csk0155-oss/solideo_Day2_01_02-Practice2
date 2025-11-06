@@ -353,3 +353,87 @@ footer {
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
+
+/* PWA 설치 버튼 */
+.install-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.install-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 30px rgba(102, 126, 234, 0.7);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(102, 126, 234, 0.8);
+    }
+}
+
+/* PWA 설치 배너 */
+.install-banner {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.install-banner p {
+    margin: 0 0 10px 0;
+    font-size: 1em;
+    opacity: 1;
+}
+
+.install-banner-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.install-banner-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* 모바일에서 설치 버튼 조정 */
+@media (max-width: 768px) {
+    .install-button {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        font-size: 0.9em;
+    }
+
+    .install-banner {
+        padding: 12px;
+    }
+
+    .install-banner p {
+        font-size: 0.9em;
+    }
+}

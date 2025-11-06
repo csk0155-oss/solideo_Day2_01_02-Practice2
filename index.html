@@ -4,13 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>여행 개인화 앱</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="맞춤형 여행 계획을 위한 스마트 여행 도우미">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="여행앱">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-192x192.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 앱 설치 버튼 -->
+    <button id="installButton" class="install-button hidden">
+        📱 앱으로 설치하기
+    </button>
+
     <div class="container">
         <header>
             <h1>🌍 여행 개인화 앱</h1>
             <p>맞춤형 여행 계획을 위한 스마트 여행 도우미</p>
+            <div id="installBanner" class="install-banner hidden">
+                <p>💡 홈 화면에 추가하여 앱처럼 사용하세요!</p>
+                <button onclick="promptInstall()" class="install-banner-btn">설치하기</button>
+            </div>
         </header>
 
         <main>
@@ -109,5 +139,159 @@
     <script src="js/restaurant.js"></script>
     <script src="js/attractions.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- PWA 설치 및 Service Worker 등록 -->
+    <script>
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker 등록 성공:', registration.scope);
+
+                        // 업데이트 확인
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // 새 버전 사용 가능
+                                    if (confirm('새로운 버전이 있습니다. 업데이트하시겠습니까?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker 등록 실패:', error);
+                    });
+
+                // Service Worker가 활성화되었을 때
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('Service Worker 업데이트됨');
+                });
+            });
+        }
+
+        // PWA 설치 프롬프트
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        const installBanner = document.getElementById('installBanner');
+
+        // beforeinstallprompt 이벤트 처리
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('📱 설치 프롬프트 준비됨');
+
+            // 기본 동작 방지
+            e.preventDefault();
+
+            // 나중에 사용하기 위해 저장
+            deferredPrompt = e;
+
+            // 설치 버튼 표시
+            installButton.classList.remove('hidden');
+            installBanner.classList.remove('hidden');
+        });
+
+        // 설치 버튼 클릭 이벤트
+        installButton.addEventListener('click', promptInstall);
+
+        // 설치 프롬프트 표시 함수
+        async function promptInstall() {
+            if (!deferredPrompt) {
+                console.log('설치 프롬프트를 사용할 수 없습니다.');
+                return;
+            }
+
+            // 프롬프트 표시
+            deferredPrompt.prompt();
+
+            // 사용자의 응답 대기
+            const { outcome } = await deferredPrompt.userChoice;
+
+            console.log(`사용자 선택: ${outcome}`);
+
+            if (outcome === 'accepted') {
+                console.log('✅ 사용자가 앱 설치를 수락했습니다.');
+            } else {
+                console.log('❌ 사용자가 앱 설치를 거부했습니다.');
+            }
+
+            // 프롬프트 초기화
+            deferredPrompt = null;
+
+            // 설치 버튼 숨기기
+            installButton.classList.add('hidden');
+            installBanner.classList.add('hidden');
+        }
+
+        // 앱이 설치되었을 때
+        window.addEventListener('appinstalled', (e) => {
+            console.log('✅ PWA가 설치되었습니다!');
+
+            // 설치 버튼 숨기기
+            installButton.classList.add('hidden');
+            installBanner.classList.add('hidden');
+
+            // 사용자에게 알림
+            if (window.travelApp) {
+                window.travelApp.showToast('앱이 성공적으로 설치되었습니다! 🎉', 'success');
+            }
+        });
+
+        // 온라인/오프라인 상태 감지
+        window.addEventListener('online', () => {
+            console.log('🌐 온라인 상태');
+            if (window.travelApp) {
+                window.travelApp.showToast('인터넷에 연결되었습니다.', 'success');
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('📡 오프라인 상태');
+            if (window.travelApp) {
+                window.travelApp.showToast('오프라인 모드입니다. 일부 기능이 제한될 수 있습니다.', 'info');
+            }
+        });
+
+        // iOS Safari에서 홈 화면 추가 가이드
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        function isInStandaloneMode() {
+            return window.matchMedia('(display-mode: standalone)').matches ||
+                   window.navigator.standalone === true;
+        }
+
+        // iOS 사용자에게 설치 안내
+        if (isIOS() && !isInStandaloneMode()) {
+            setTimeout(() => {
+                const iosBanner = document.createElement('div');
+                iosBanner.className = 'ios-install-banner';
+                iosBanner.innerHTML = `
+                    <div style="background: #667eea; color: white; padding: 15px; text-align: center; border-radius: 10px; margin: 10px;">
+                        <p style="margin: 0 0 10px 0;">📱 iOS 기기에서 앱으로 설치하기</p>
+                        <p style="margin: 0; font-size: 0.9em;">
+                            Safari 하단의 <strong>공유 버튼 ⬆️</strong>을 누른 후<br>
+                            <strong>"홈 화면에 추가"</strong>를 선택하세요.
+                        </p>
+                        <button onclick="this.parentElement.parentElement.remove()"
+                                style="margin-top: 10px; padding: 8px 20px; background: white; color: #667eea; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                            확인
+                        </button>
+                    </div>
+                `;
+
+                const header = document.querySelector('header');
+                if (header) {
+                    header.appendChild(iosBanner);
+                }
+            }, 3000); // 3초 후 표시
+        }
+
+        console.log('🚀 PWA 기능이 활성화되었습니다!');
+    </script>
 </body>
 </html>

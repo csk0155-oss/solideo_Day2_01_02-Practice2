@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오프라인 - 여행 개인화 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .offline-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        h1 {
+            color: #2C3E50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .offline-features {
+            background: #F8F9FA;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .offline-features h3 {
+            color: #2C3E50;
+            margin-bottom: 15px;
+        }
+
+        .offline-features ul {
+            list-style: none;
+        }
+
+        .offline-features li {
+            color: #666;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .offline-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #50C878;
+            font-weight: bold;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .connection-status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .connection-status.offline {
+            background: #FFE5E5;
+            color: #E74C3C;
+        }
+
+        .connection-status.online {
+            background: #E8F8F0;
+            color: #50C878;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>오프라인 모드</h1>
+        <p>인터넷 연결을 확인할 수 없습니다.<br>연결이 복구되면 자동으로 다시 시도됩니다.</p>
+
+        <div class="offline-features">
+            <h3>오프라인에서도 사용 가능:</h3>
+            <ul>
+                <li>이전에 본 여행지 정보</li>
+                <li>저장된 맛집 목록</li>
+                <li>앱 기본 기능</li>
+                <li>캐시된 경로 정보</li>
+            </ul>
+        </div>
+
+        <button class="retry-btn" onclick="retryConnection()">다시 연결하기</button>
+
+        <div id="connectionStatus" class="connection-status offline">
+            오프라인
+        </div>
+    </div>
+
+    <script>
+        // 연결 상태 확인
+        function updateOnlineStatus() {
+            const status = document.getElementById('connectionStatus');
+
+            if (navigator.onLine) {
+                status.textContent = '온라인 - 페이지를 새로고침합니다...';
+                status.className = 'connection-status online';
+
+                // 온라인이 되면 홈페이지로 이동
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            } else {
+                status.textContent = '오프라인';
+                status.className = 'connection-status offline';
+            }
+        }
+
+        // 연결 재시도
+        function retryConnection() {
+            if (navigator.onLine) {
+                window.location.href = '/';
+            } else {
+                alert('아직 인터넷에 연결되어 있지 않습니다. 네트워크 설정을 확인해주세요.');
+            }
+        }
+
+        // 온라인/오프라인 이벤트 리스너
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // 페이지 로드 시 상태 확인
+        updateOnlineStatus();
+
+        // 5초마다 자동으로 연결 확인
+        setInterval(() => {
+            if (navigator.onLine) {
+                updateOnlineStatus();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
