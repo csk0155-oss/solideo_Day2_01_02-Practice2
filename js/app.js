@@ -17,6 +17,11 @@ class TravelApp {
         // 출발 시간 입력란에 현재 시간 설정
         this.setDefaultDateTime();
 
+        // 지도 초기화
+        if (typeof mapManager !== 'undefined') {
+            mapManager.initMap();
+        }
+
         // 폼 제출 이벤트 리스너
         const form = document.getElementById('travelForm');
         form.addEventListener('submit', (e) => this.handleFormSubmit(e));
@@ -123,6 +128,11 @@ class TravelApp {
 
     // 경로 정보 표시
     displayRoute(departure, destination, departureTime, transportType) {
+        // 지도에 경로 표시
+        if (typeof mapManager !== 'undefined') {
+            mapManager.displayRoute(departure, destination, transportType);
+        }
+
         // 자동차 경로 (기존 기능)
         if (transportType === 'car' || transportType === 'all') {
             routeOptimizer.displayRouteInfo(departure, destination, departureTime);
@@ -171,8 +181,13 @@ class TravelApp {
             // 화면 상단에 메시지 표시 (간단한 토스트 메시지)
             this.showToast(message, 'success');
 
-            // 경로 섹션으로 스크롤
-            document.getElementById('routeSection').scrollIntoView({
+            // 지도 섹션으로 스크롤 (지도가 있으면 지도로, 없으면 경로 섹션으로)
+            const mapSection = document.getElementById('mapSection');
+            const targetSection = mapSection && !mapSection.classList.contains('hidden')
+                ? mapSection
+                : document.getElementById('routeSection');
+
+            targetSection.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
@@ -236,6 +251,12 @@ class TravelApp {
         routeOptimizer.reset();
         restaurantRecommender.reset();
         attractionRecommender.reset();
+
+        // 지도 초기화
+        if (typeof mapManager !== 'undefined') {
+            mapManager.clearMap();
+            mapManager.hideMap();
+        }
 
         // 섹션 숨기기
         document.getElementById('routeSection').classList.add('hidden');

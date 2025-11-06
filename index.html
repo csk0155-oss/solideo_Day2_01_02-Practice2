@@ -6,6 +6,7 @@
     <meta name="description" content="맞춤형 여행 계획을 위한 스마트 여행 도우미">
     <title>여행 개인화 웹사이트</title>
     <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_APP_KEY&libraries=services"></script>
 </head>
 <body>
     <div class="container">
@@ -58,6 +59,12 @@
 
                     <button type="submit" class="btn-primary">여행 계획 시작하기</button>
                 </form>
+            </section>
+
+            <!-- 지도 섹션 -->
+            <section id="mapSection" class="map-section hidden">
+                <h2>🗺️ 경로 지도</h2>
+                <div id="map" class="map-container"></div>
             </section>
 
             <!-- 실시간 경로 정보 섹션 -->
@@ -210,6 +217,7 @@
     <script src="js/route.js"></script>
     <script src="js/restaurant.js"></script>
     <script src="js/attractions.js"></script>
+    <script src="js/map.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
