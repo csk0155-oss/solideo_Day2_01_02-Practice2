@@ -93,19 +93,32 @@ label {
     font-weight: 600;
 }
 
-input {
+input, select {
     width: 100%;
     padding: 12px;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 1em;
     transition: var(--transition);
+    background: white;
 }
 
-input:focus {
+input:focus, select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+select {
+    cursor: pointer;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
 }
 
 /* 버튼 */
@@ -352,4 +365,215 @@ footer {
 
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 교통수단 탭 */
+.transport-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 20px;
+    background: white;
+    border: 2px solid var(--light-color);
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tab-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 공통 경로 정보 */
+.route-common-info {
+    background: var(--light-color);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 20px;
+    display: grid;
+    gap: 10px;
+}
+
+.route-common-info .route-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+}
+
+/* 교통수단별 정보 */
+.transport-info h3 {
+    color: var(--dark-color);
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-color);
+}
+
+.route-item.full-width {
+    grid-column: 1 / -1;
+    flex-direction: column;
+}
+
+/* 대중교통 경로 상세 */
+.route-detail-list {
+    background: white;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.route-step {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: var(--light-color);
+    border-radius: 6px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.route-step-icon {
+    font-size: 1.5em;
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.route-step-content {
+    flex: 1;
+}
+
+.route-step-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 5px;
+}
+
+.route-step-detail {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.route-step-time {
+    font-size: 0.9em;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-left: 15px;
+}
+
+/* 비행기 옵션 리스트 */
+.flight-options-list {
+    background: white;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.flight-option {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: var(--light-color);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.flight-option:hover {
+    border-color: var(--primary-color);
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.flight-option-info {
+    display: grid;
+    gap: 8px;
+}
+
+.flight-airline {
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 1.1em;
+}
+
+.flight-time {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.flight-details {
+    font-size: 0.85em;
+    color: #888;
+}
+
+.flight-price {
+    text-align: right;
+}
+
+.flight-price-amount {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.flight-price-label {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.best-deal {
+    background: linear-gradient(135deg, rgba(80, 200, 120, 0.1) 0%, rgba(80, 200, 120, 0.05) 100%);
+    border-color: var(--secondary-color);
+}
+
+.best-deal-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 768px) {
+    .transport-tabs {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        width: 100%;
+    }
+
+    .flight-option {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .flight-price {
+        text-align: left;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+    }
 }

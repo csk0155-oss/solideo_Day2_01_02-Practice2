@@ -5,7 +5,8 @@ class TravelApp {
             departure: '',
             destination: '',
             departureTime: null,
-            duration: 0
+            duration: 0,
+            transportType: ''
         };
 
         this.init();
@@ -53,6 +54,7 @@ class TravelApp {
         this.travelData.destination = document.getElementById('destination').value.trim();
         this.travelData.departureTime = new Date(document.getElementById('departureTime').value);
         this.travelData.duration = parseInt(document.getElementById('duration').value);
+        this.travelData.transportType = document.getElementById('transportType').value;
 
         // 유효성 검사
         if (!this.validateInput()) {
@@ -98,12 +100,16 @@ class TravelApp {
 
     // 여행 계획 시작
     startTravelPlanning() {
-        const { departure, destination, departureTime, duration } = this.travelData;
+        const { departure, destination, departureTime, duration, transportType } = this.travelData;
 
         console.log('여행 계획 시작:', this.travelData);
 
-        // 1. 최적 경로 표시
-        this.displayRoute(departure, destination, departureTime);
+        // 공통 정보 표시
+        document.getElementById('departureLocation').textContent = departure;
+        document.getElementById('destinationLocation').textContent = destination;
+
+        // 1. 교통수단별 경로 표시
+        this.displayRoute(departure, destination, departureTime, transportType);
 
         // 2. 맛집 추천 표시
         this.displayRestaurants(destination);
@@ -112,12 +118,35 @@ class TravelApp {
         this.setupPreferences(destination);
 
         // 4. 성공 메시지
-        this.showSuccessMessage(departure, destination, duration);
+        this.showSuccessMessage(departure, destination, duration, transportType);
     }
 
     // 경로 정보 표시
-    displayRoute(departure, destination, departureTime) {
-        routeOptimizer.displayRouteInfo(departure, destination, departureTime);
+    displayRoute(departure, destination, departureTime, transportType) {
+        // 자동차 경로 (기존 기능)
+        if (transportType === 'car' || transportType === 'all') {
+            routeOptimizer.displayRouteInfo(departure, destination, departureTime);
+        }
+
+        // 대중교통
+        if (transportType === 'public' || transportType === 'all') {
+            transportUI.displayPublicTransport(departure, destination);
+        }
+
+        // 비행기
+        if (transportType === 'flight' || transportType === 'all') {
+            transportUI.displayFlight(departure, destination);
+        }
+
+        // 전체 비교 시 탭 표시
+        if (transportType === 'all') {
+            document.getElementById('transportTabs').classList.remove('hidden');
+        } else {
+            // 단일 교통수단 선택 시 해당 정보만 표시
+            document.getElementById('carRouteInfo').classList.toggle('hidden', transportType !== 'car');
+            document.getElementById('publicRouteInfo').classList.toggle('hidden', transportType !== 'public');
+            document.getElementById('flightRouteInfo').classList.toggle('hidden', transportType !== 'flight');
+        }
     }
 
     // 맛집 추천 표시

@@ -20,13 +20,28 @@
                 <h2>여행 정보 입력</h2>
                 <form id="travelForm">
                     <div class="form-group">
-                        <label for="departure">출발지</label>
-                        <input type="text" id="departure" name="departure" placeholder="예: 서울" required>
+                        <label for="departure">출발지 (건물명 또는 주소)</label>
+                        <input type="text" id="departure" name="departure"
+                               placeholder="예: 서울역, 강남구 테헤란로 123, 인천국제공항" required>
+                        <small class="form-hint">구체적인 건물명이나 주소를 입력하세요</small>
                     </div>
 
                     <div class="form-group">
-                        <label for="destination">도착지</label>
-                        <input type="text" id="destination" name="destination" placeholder="예: 부산" required>
+                        <label for="destination">도착지 (건물명 또는 주소)</label>
+                        <input type="text" id="destination" name="destination"
+                               placeholder="예: 해운대 해수욕장, 부산역, 도쿄 신주쿠역" required>
+                        <small class="form-hint">구체적인 건물명이나 주소를 입력하세요</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transportType">교통수단</label>
+                        <select id="transportType" name="transportType" required>
+                            <option value="">선택하세요</option>
+                            <option value="car">자동차 🚗</option>
+                            <option value="public">대중교통 (버스/지하철) 🚇</option>
+                            <option value="flight">비행기 ✈️</option>
+                            <option value="all">전체 비교</option>
+                        </select>
                     </div>
 
                     <div class="form-row">
@@ -47,28 +62,112 @@
 
             <!-- 실시간 경로 정보 섹션 -->
             <section id="routeSection" class="route-section hidden">
-                <h2>🚗 최적 경로 안내</h2>
-                <div id="routeInfo" class="info-card">
+                <h2 id="routeSectionTitle">🚗 최적 경로 안내</h2>
+
+                <!-- 교통수단별 탭 -->
+                <div id="transportTabs" class="transport-tabs hidden">
+                    <button class="tab-btn active" data-transport="car">자동차 🚗</button>
+                    <button class="tab-btn" data-transport="public">대중교통 🚇</button>
+                    <button class="tab-btn" data-transport="flight">비행기 ✈️</button>
+                </div>
+
+                <!-- 공통 정보 -->
+                <div class="route-common-info">
+                    <div class="route-item">
+                        <span class="label">현재 시각:</span>
+                        <span id="currentTime" class="value">-</span>
+                    </div>
+                    <div class="route-item">
+                        <span class="label">출발:</span>
+                        <span id="departureLocation" class="value">-</span>
+                    </div>
+                    <div class="route-item">
+                        <span class="label">도착:</span>
+                        <span id="destinationLocation" class="value">-</span>
+                    </div>
+                </div>
+
+                <!-- 자동차 경로 -->
+                <div id="carRouteInfo" class="transport-info info-card">
+                    <h3>🚗 자동차 경로</h3>
                     <div class="route-details">
                         <div class="route-item">
-                            <span class="label">현재 시각:</span>
-                            <span id="currentTime" class="value">-</span>
-                        </div>
-                        <div class="route-item">
                             <span class="label">예상 소요 시간:</span>
-                            <span id="estimatedTime" class="value">-</span>
+                            <span id="carEstimatedTime" class="value">-</span>
                         </div>
                         <div class="route-item">
                             <span class="label">거리:</span>
-                            <span id="distance" class="value">-</span>
+                            <span id="carDistance" class="value">-</span>
                         </div>
                         <div class="route-item">
                             <span class="label">추천 경로:</span>
-                            <span id="recommendedRoute" class="value">-</span>
+                            <span id="carRecommendedRoute" class="value">-</span>
                         </div>
                         <div class="route-item">
                             <span class="label">교통 상황:</span>
-                            <span id="trafficStatus" class="value">-</span>
+                            <span id="carTrafficStatus" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">예상 통행료:</span>
+                            <span id="carTollFee" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">예상 유류비:</span>
+                            <span id="carFuelCost" class="value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 대중교통 경로 -->
+                <div id="publicRouteInfo" class="transport-info info-card hidden">
+                    <h3>🚇 대중교통 경로</h3>
+                    <div class="route-details">
+                        <div class="route-item">
+                            <span class="label">예상 소요 시간:</span>
+                            <span id="publicEstimatedTime" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">환승 횟수:</span>
+                            <span id="publicTransfers" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">총 요금:</span>
+                            <span id="publicFare" class="value">-</span>
+                        </div>
+                        <div class="route-item full-width">
+                            <span class="label">경로 상세:</span>
+                            <div id="publicRouteDetail" class="route-detail-list"></div>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">첫차/막차 시간:</span>
+                            <span id="publicOperationTime" class="value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 비행기 정보 -->
+                <div id="flightRouteInfo" class="transport-info info-card hidden">
+                    <h3>✈️ 비행기 정보</h3>
+                    <div class="route-details">
+                        <div class="route-item">
+                            <span class="label">비행 시간:</span>
+                            <span id="flightDuration" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">거리:</span>
+                            <span id="flightDistance" class="value">-</span>
+                        </div>
+                        <div class="route-item full-width">
+                            <span class="label">항공편 및 가격:</span>
+                            <div id="flightOptions" class="flight-options-list"></div>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">출발 공항:</span>
+                            <span id="departureAirport" class="value">-</span>
+                        </div>
+                        <div class="route-item">
+                            <span class="label">도착 공항:</span>
+                            <span id="arrivalAirport" class="value">-</span>
                         </div>
                     </div>
                 </div>
@@ -106,6 +205,8 @@
     </div>
 
     <script src="js/data.js"></script>
+    <script src="js/transport.js"></script>
+    <script src="js/transport-ui.js"></script>
     <script src="js/route.js"></script>
     <script src="js/restaurant.js"></script>
     <script src="js/attractions.js"></script>
